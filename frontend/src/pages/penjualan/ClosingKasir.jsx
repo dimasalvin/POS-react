@@ -37,7 +37,56 @@ export default function ClosingKasir() {
   const totalTunai = data.reduce((s, r) => s + parseFloat(r.total_tunai || 0), 0);
   const totalNonTunai = data.reduce((s, r) => s + parseFloat(r.total_non_tunai || 0), 0);
 
-  const handlePrint = () => window.print();
+  const handlePrint = () => {
+    const rows = data.map(row => `
+      <tr>
+        <td style="text-transform:capitalize">${row.shift}</td>
+        <td style="text-transform:uppercase">${row.tipe}</td>
+        <td style="text-align:right">${row.jumlah_transaksi}</td>
+        <td style="text-align:right">Rp ${formatRupiah(row.total_penjualan)}</td>
+        <td style="text-align:right">Rp ${formatRupiah(row.total_tunai)}</td>
+        <td style="text-align:right">Rp ${formatRupiah(row.total_non_tunai)}</td>
+      </tr>
+    `).join('');
+
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html><head><title>Closing Kasir</title>
+      <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; padding: 20px; }
+        h2 { text-align: center; margin-bottom: 4px; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { border: 1px solid #ddd; padding: 8px; font-size: 11px; }
+        th { background: #0f766e; color: white; text-align: left; }
+        td { text-align: left; }
+        .total-row { background: #f3f4f6; font-weight: bold; }
+        .footer { margin-top: 16px; font-size: 10px; color: #666; text-align: right; }
+        @media print { @page { margin: 10mm; } }
+      </style></head><body>
+        <h2>APOTEK MORO MARI</h2>
+        <p class="subtitle">Closing Kasir: ${filter.from} s/d ${filter.to}${filter.shift ? ' | Shift: ' + filter.shift : ''}</p>
+        <table>
+          <thead><tr>
+            <th>Shift</th><th>Tipe</th><th style="text-align:right">Transaksi</th>
+            <th style="text-align:right">Total Penjualan</th><th style="text-align:right">Tunai</th><th style="text-align:right">Non-Tunai</th>
+          </tr></thead>
+          <tbody>${rows}
+            <tr class="total-row">
+              <td colspan="3">GRAND TOTAL</td>
+              <td style="text-align:right">Rp ${formatRupiah(grandTotal)}</td>
+              <td style="text-align:right">Rp ${formatRupiah(totalTunai)}</td>
+              <td style="text-align:right">Rp ${formatRupiah(totalNonTunai)}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="footer">Dicetak: ${format(new Date(), 'dd-MM-yyyy HH:mm:ss')}</p>
+      </body></html>
+    `);
+    printWindow.document.close();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 300);
+  };
 
   return (
     <div className="space-y-4">
