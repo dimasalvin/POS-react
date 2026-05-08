@@ -104,8 +104,7 @@ app.get('/api/audit-log', require('./middleware/auth').authMiddleware, async (re
     if (to) { query += ' AND created_at <= ?'; params.push(to + ' 23:59:59'); }
     if (user_id) { query += ' AND user_id = ?'; params.push(parseInt(user_id)); }
     if (mod) { query += ' AND module = ?'; params.push(mod); }
-    query += ' ORDER BY created_at DESC LIMIT ?';
-    params.push(parseInt(limit));
+    query += ` ORDER BY created_at DESC LIMIT ${parseInt(limit)}`;
     const [rows] = await db.execute(query, params);
     res.json({ success: true, data: rows });
   } catch (err) {

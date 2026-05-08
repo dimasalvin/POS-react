@@ -50,8 +50,7 @@ router.get('/', async (req, res) => {
     }
 
     const offset = (parseInt(page) - 1) * parseInt(limit);
-    query += ' ORDER BY b.nama_barang ASC LIMIT ? OFFSET ?';
-    params.push(parseInt(limit), offset);
+    query += ` ORDER BY b.nama_barang ASC LIMIT ${parseInt(limit)} OFFSET ${offset}`;
 
     const [rows] = await db.execute(query, params);
     const [countResult] = await db.execute(countQuery, countParams);
