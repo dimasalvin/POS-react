@@ -10,11 +10,18 @@ const db = require('../config/database');
  * @param {string} params.detail - Human-readable description
  * @param {string} params.ip - IP address
  */
+function cleanIp(ip) {
+  if (!ip) return null;
+  // Convert ::ffff:x.x.x.x to x.x.x.x
+  if (ip.startsWith('::ffff:')) return ip.slice(7);
+  return ip;
+}
+
 async function logActivity({ userId, username, action, module, detail, ip }) {
   try {
     await db.execute(
       'INSERT INTO audit_log (user_id, username, action, module, detail, ip_address) VALUES (?, ?, ?, ?, ?, ?)',
-      [userId || null, username || null, action, module, detail || null, ip || null]
+      [userId || null, username || null, action, module, detail || null, cleanIp(ip)]
     );
   } catch (err) {
     // Don't let audit log failure break the app
