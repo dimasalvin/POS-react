@@ -90,10 +90,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="px-4 py-3 border-t border-teal-700 text-xs text-teal-400">
-        SIA: 442/18/DPM-PTSP/IUAP/IV/2019
-      </div>
+
     </aside>
   );
 }

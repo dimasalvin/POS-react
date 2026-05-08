@@ -66,9 +66,7 @@ export default function Login() {
           </Button>
         </form>
 
-        <p className="text-center text-xs text-gray-400 mt-6">
-          SIA: 442/18/DPM-PTSP/IUAP/IV/2019
-        </p>
+
       </div>
     </div>
   );

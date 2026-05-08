@@ -40,7 +40,7 @@ const ReceiptPrint = forwardRef(({ data, onClose }, ref) => {
           <h1>APOTEK MORO MARI</h1>
           <p>Jl. Gamers No. 8, Semarang</p>
           <p>Telp: (024) 1234567</p>
-          <p>SIA: 442/18/DPM-PTSP/IUAP/IV/2019</p>
+
         </div>
         <div class="line"></div>
         <div class="row"><span>No: ${no_nota}</span><span>${format(new Date(tanggal), 'dd/MM/yy')}</span></div>

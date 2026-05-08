@@ -1,6 +1,5 @@
 # 🏥 Apotek Moro Mari — Sistem Manajemen Farmasi
 
-> **No. SIA:** 442/18/DPM-PTSP/IUAP/IV/2019  
 > **Alamat:** Jalan Gamers No. 8, Semarang | **Telp:** (024) 1234567
 
 Sistem informasi manajemen apotek berbasis web fullstack untuk mengelola stok obat, pembelian dari PBF/supplier, penjualan kasir (HV & Resep), laporan harian, dan closing kasir per shift.
