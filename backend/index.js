@@ -9,6 +9,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy (Railway, Vercel, etc.)
+app.set('trust proxy', true);
+
 // Middleware
 app.use(helmet());
 app.use(compression());
