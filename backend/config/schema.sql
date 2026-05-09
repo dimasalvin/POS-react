@@ -148,6 +148,9 @@ CREATE TABLE IF NOT EXISTS penjualan_detail (
   barang_id INT NOT NULL,
   jumlah INT NOT NULL,
   harga_satuan DECIMAL(12,2) NOT NULL,
+  diskon_tipe ENUM('persen', 'rupiah') DEFAULT NULL,
+  diskon_nilai DECIMAL(12,2) DEFAULT 0,
+  diskon_nominal DECIMAL(12,2) DEFAULT 0,
   subtotal DECIMAL(14,2) NOT NULL,
   FOREIGN KEY (penjualan_id) REFERENCES penjualan(id) ON DELETE CASCADE,
   FOREIGN KEY (barang_id) REFERENCES barang(id) ON DELETE RESTRICT

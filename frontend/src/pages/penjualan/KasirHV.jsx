@@ -69,7 +69,7 @@ export default function KasirHV() {
     if (exists) {
       setCart(prev => prev.map(c =>
         c.barang_id === barang.id && !c.isResep
-          ? { ...c, jumlah: c.jumlah + 1, subtotal: (c.jumlah + 1) * parseFloat(c.harga_satuan) }
+          ? { ...c, jumlah: c.jumlah + 1, subtotal: calcSubtotal(c.jumlah + 1, c.harga_satuan, c.diskon_tipe, c.diskon_nilai) }
           : c
       ));
     } else {
@@ -77,18 +77,35 @@ export default function KasirHV() {
       setCart(prev => [...prev, {
         barang_id: barang.id, nama_barang: barang.nama_barang, satuan: barang.satuan,
         harga_satuan: harga, jumlah: 1, subtotal: harga,
-        stock: barang.stock_saat_ini, isResep: false
+        stock: barang.stock_saat_ini, isResep: false,
+        diskon_tipe: null, diskon_nilai: 0
       }]);
     }
     setSearch('');
     setShowResults(false);
   };
 
+  const calcSubtotal = (jumlah, harga, diskonTipe, diskonNilai) => {
+    const bruto = jumlah * parseFloat(harga);
+    if (diskonTipe === 'persen' && diskonNilai > 0) {
+      return bruto - Math.round(bruto * parseFloat(diskonNilai) / 100);
+    } else if (diskonTipe === 'rupiah' && diskonNilai > 0) {
+      return bruto - (parseFloat(diskonNilai) * jumlah);
+    }
+    return bruto;
+  };
+
   const updateQty = (index, qty) => {
     const val = parseInt(qty) || 0;
     if (val <= 0) { removeItem(index); return; }
     setCart(prev => prev.map((c, i) =>
-      i === index ? { ...c, jumlah: val, subtotal: val * parseFloat(c.harga_satuan) } : c
+      i === index ? { ...c, jumlah: val, subtotal: calcSubtotal(val, c.harga_satuan, c.diskon_tipe, c.diskon_nilai) } : c
+    ));
+  };
+
+  const updateDiskon = (index, tipe, nilai) => {
+    setCart(prev => prev.map((c, i) =>
+      i === index ? { ...c, diskon_tipe: tipe, diskon_nilai: parseFloat(nilai) || 0, subtotal: calcSubtotal(c.jumlah, c.harga_satuan, tipe, parseFloat(nilai) || 0) } : c
     ));
   };
 
@@ -105,7 +122,7 @@ export default function KasirHV() {
     if (exists) {
       setResepCart(prev => prev.map(c =>
         c.barang_id === barang.id
-          ? { ...c, jumlah: c.jumlah + 1, subtotal: (c.jumlah + 1) * parseFloat(c.harga_satuan) }
+          ? { ...c, jumlah: c.jumlah + 1, subtotal: calcSubtotal(c.jumlah + 1, c.harga_satuan, c.diskon_tipe, c.diskon_nilai) }
           : c
       ));
     } else {
@@ -113,7 +130,8 @@ export default function KasirHV() {
       setResepCart(prev => [...prev, {
         barang_id: barang.id, nama_barang: barang.nama_barang, satuan: barang.satuan,
         harga_satuan: harga, jumlah: 1, subtotal: harga,
-        stock: barang.stock_saat_ini
+        stock: barang.stock_saat_ini,
+        diskon_tipe: null, diskon_nilai: 0
       }]);
     }
     setResepSearch('');
@@ -124,7 +142,13 @@ export default function KasirHV() {
     const val = parseInt(qty) || 0;
     if (val <= 0) { setResepCart(prev => prev.filter((_, i) => i !== index)); return; }
     setResepCart(prev => prev.map((c, i) =>
-      i === index ? { ...c, jumlah: val, subtotal: val * parseFloat(c.harga_satuan) } : c
+      i === index ? { ...c, jumlah: val, subtotal: calcSubtotal(val, c.harga_satuan, c.diskon_tipe, c.diskon_nilai) } : c
+    ));
+  };
+
+  const updateResepDiskon = (index, tipe, nilai) => {
+    setResepCart(prev => prev.map((c, i) =>
+      i === index ? { ...c, diskon_tipe: tipe, diskon_nilai: parseFloat(nilai) || 0, subtotal: calcSubtotal(c.jumlah, c.harga_satuan, tipe, parseFloat(nilai) || 0) } : c
     ));
   };
 
@@ -149,7 +173,8 @@ export default function KasirHV() {
       jumlah: 1,
       subtotal: resepTotal,
       resepItems: resepCart.map(c => ({
-        barang_id: c.barang_id, jumlah: c.jumlah, harga_satuan: c.harga_satuan, subtotal: c.subtotal
+        barang_id: c.barang_id, jumlah: c.jumlah, harga_satuan: c.harga_satuan, subtotal: c.subtotal,
+        diskon_tipe: c.diskon_tipe, diskon_nilai: c.diskon_nilai
       }))
     };
 
@@ -205,12 +230,17 @@ export default function KasirHV() {
     for (const item of cart) {
       if (item.isResep && item.resepItems) {
         for (const ri of item.resepItems) {
-          flatItems.push(ri);
+          flatItems.push({
+            barang_id: ri.barang_id, jumlah: ri.jumlah,
+            harga_satuan: ri.harga_satuan, subtotal: ri.subtotal,
+            diskon_tipe: ri.diskon_tipe || null, diskon_nilai: ri.diskon_nilai || 0
+          });
         }
       } else {
         flatItems.push({
           barang_id: item.barang_id, jumlah: item.jumlah,
-          harga_satuan: item.harga_satuan, subtotal: item.subtotal
+          harga_satuan: item.harga_satuan, subtotal: item.subtotal,
+          diskon_tipe: item.diskon_tipe || null, diskon_nilai: item.diskon_nilai || 0
         });
       }
     }
@@ -308,6 +338,7 @@ export default function KasirHV() {
                   <th className="pb-2">Barang</th>
                   <th className="pb-2 w-20">Qty</th>
                   <th className="pb-2 w-28 text-right">Harga</th>
+                  <th className="pb-2 w-36">Diskon</th>
                   <th className="pb-2 w-32 text-right">Subtotal</th>
                   <th className="pb-2 w-8"></th>
                 </tr>
@@ -335,6 +366,25 @@ export default function KasirHV() {
                       )}
                     </td>
                     <td className="py-2 text-right">{formatRupiah(item.harga_satuan)}</td>
+                    <td className="py-2">
+                      {!item.isResep && (
+                        <div className="flex gap-1 items-center">
+                          <select value={item.diskon_tipe || ''}
+                            onChange={(e) => updateDiskon(i, e.target.value || null, item.diskon_nilai)}
+                            className="w-16 px-1 py-1 border rounded text-xs">
+                            <option value="">-</option>
+                            <option value="persen">%</option>
+                            <option value="rupiah">Rp</option>
+                          </select>
+                          {item.diskon_tipe && (
+                            <input type="number" value={item.diskon_nilai || ''} min="0"
+                              onChange={(e) => updateDiskon(i, item.diskon_tipe, e.target.value)}
+                              placeholder="0"
+                              className="w-16 px-1 py-1 border rounded text-center text-xs" />
+                          )}
+                        </div>
+                      )}
+                    </td>
                     <td className="py-2 text-right font-medium">{formatRupiah(item.subtotal)}</td>
                     <td className="py-2">
                       <button onClick={() => removeItem(i)} className="text-red-500 hover:text-red-700">
@@ -488,6 +538,7 @@ export default function KasirHV() {
                     <th className="px-3 py-2 text-left text-xs">Obat</th>
                     <th className="px-3 py-2 text-center text-xs w-20">Qty</th>
                     <th className="px-3 py-2 text-right text-xs w-28">Harga</th>
+                    <th className="px-3 py-2 text-xs w-36">Diskon</th>
                     <th className="px-3 py-2 text-right text-xs w-28">Subtotal</th>
                     <th className="px-3 py-2 w-8"></th>
                   </tr>
@@ -505,6 +556,23 @@ export default function KasirHV() {
                           className="w-14 px-1 py-1 border rounded text-center text-sm" />
                       </td>
                       <td className="px-3 py-2 text-right">{formatRupiah(item.harga_satuan)}</td>
+                      <td className="px-3 py-2">
+                        <div className="flex gap-1 items-center">
+                          <select value={item.diskon_tipe || ''}
+                            onChange={(e) => updateResepDiskon(i, e.target.value || null, item.diskon_nilai)}
+                            className="w-16 px-1 py-1 border rounded text-xs">
+                            <option value="">-</option>
+                            <option value="persen">%</option>
+                            <option value="rupiah">Rp</option>
+                          </select>
+                          {item.diskon_tipe && (
+                            <input type="number" value={item.diskon_nilai || ''} min="0"
+                              onChange={(e) => updateResepDiskon(i, item.diskon_tipe, e.target.value)}
+                              placeholder="0"
+                              className="w-16 px-1 py-1 border rounded text-center text-xs" />
+                          )}
+                        </div>
+                      </td>
                       <td className="px-3 py-2 text-right font-medium">{formatRupiah(item.subtotal)}</td>
                       <td className="px-3 py-2">
                         <button onClick={() => removeResepItem(i)} className="text-red-500 hover:text-red-700">

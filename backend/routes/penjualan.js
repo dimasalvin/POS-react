@@ -91,7 +91,18 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Shift harus pagi atau siang' });
     }
 
-    const total = items.reduce((sum, item) => sum + parseFloat(item.subtotal), 0);
+    const total = items.reduce((sum, item) => {
+      const harga = parseFloat(item.harga_satuan);
+      const jumlah = parseInt(item.jumlah);
+      let diskonNominal = 0;
+      if (item.diskon_tipe === 'persen' && item.diskon_nilai > 0) {
+        diskonNominal = Math.round(harga * jumlah * parseFloat(item.diskon_nilai) / 100);
+      } else if (item.diskon_tipe === 'rupiah' && item.diskon_nilai > 0) {
+        diskonNominal = parseFloat(item.diskon_nilai) * jumlah;
+      }
+      const subtotal = (harga * jumlah) - diskonNominal;
+      return sum + subtotal;
+    }, 0);
     const bayarTunai = parseFloat(tunai) || 0;
     const bayarNonTunai = parseFloat(non_tunai) || 0;
     const totalBayar = bayarTunai + bayarNonTunai;
@@ -129,14 +140,26 @@ router.post('/', async (req, res) => {
     const penjualanId = result.insertId;
 
     for (const item of items) {
+      const harga = parseFloat(item.harga_satuan);
+      const jumlah = parseInt(item.jumlah);
+      const diskonTipe = item.diskon_tipe || null;
+      const diskonNilai = parseFloat(item.diskon_nilai) || 0;
+      let diskonNominal = 0;
+      if (diskonTipe === 'persen' && diskonNilai > 0) {
+        diskonNominal = Math.round(harga * jumlah * diskonNilai / 100);
+      } else if (diskonTipe === 'rupiah' && diskonNilai > 0) {
+        diskonNominal = diskonNilai * jumlah;
+      }
+      const subtotal = (harga * jumlah) - diskonNominal;
+
       await conn.execute(
-        'INSERT INTO penjualan_detail (penjualan_id, barang_id, jumlah, harga_satuan, subtotal) VALUES (?, ?, ?, ?, ?)',
-        [penjualanId, item.barang_id, parseInt(item.jumlah), parseFloat(item.harga_satuan), parseFloat(item.subtotal)]
+        'INSERT INTO penjualan_detail (penjualan_id, barang_id, jumlah, harga_satuan, diskon_tipe, diskon_nilai, diskon_nominal, subtotal) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [penjualanId, item.barang_id, jumlah, harga, diskonTipe, diskonNilai, diskonNominal, subtotal]
       );
 
       await conn.execute(
         'UPDATE barang SET stock_saat_ini = stock_saat_ini - ? WHERE id = ?',
-        [parseInt(item.jumlah), item.barang_id]
+        [jumlah, item.barang_id]
       );
     }
 
