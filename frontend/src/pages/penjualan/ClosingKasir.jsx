@@ -65,7 +65,7 @@ export default function ClosingKasir() {
         .footer { margin-top: 16px; font-size: 10px; color: #666; text-align: right; }
         @media print { @page { margin: 10mm; } }
       </style></head><body>
-        <h2>APOTEK MORO MARI</h2>
+        <h2>POS APOTEK</h2>
         <p class="subtitle">Closing Kasir: ${filter.from} s/d ${filter.to}${filter.shift ? ' | Shift: ' + filter.shift : ''}</p>
         <table>
           <thead><tr>

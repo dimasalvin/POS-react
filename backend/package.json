@@ -1,7 +1,7 @@
 {
-  "name": "apotek-moro-mari-backend",
+  "name": "pos-apotek-backend",
   "version": "1.0.0",
-  "description": "Backend API for Apotek Moro Mari POS System",
+  "description": "Backend API for Pos Apotek POS System",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",

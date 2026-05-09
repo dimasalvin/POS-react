@@ -108,7 +108,7 @@ export default function LaporanPenjualan() {
         .footer { margin-top: 12px; font-size: 11px; display: flex; justify-content: space-between; }
         @media print { @page { size: landscape; margin: 10mm; } }
       </style></head><body>
-        <h2>APOTEK MORO MARI</h2>
+        <h2>POS APOTEK</h2>
         <p class="subtitle">Laporan Penjualan: ${filter.from} s/d ${filter.to}</p>
         <table>
           <thead><tr>

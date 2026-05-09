@@ -12,7 +12,7 @@ export default function Layout() {
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Header */}
         <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
-          <h1 className="text-lg font-semibold text-gray-800">Apotek Moro Mari</h1>
+          <h1 className="text-lg font-semibold text-gray-800">Pos Apotek</h1>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <User size={16} />

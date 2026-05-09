@@ -40,7 +40,8 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-700 to-teal-900">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-teal-800">Apotek Moro Mari</h1>
+          <img src="/logo.svg" alt="Pos Apotek" className="w-20 h-20 mx-auto mb-3" />
+          <h1 className="text-2xl font-bold text-teal-800">Pos Apotek</h1>
           <p className="text-sm text-gray-500 mt-1">Sistem Manajemen Farmasi</p>
         </div>
 

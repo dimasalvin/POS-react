@@ -53,9 +53,12 @@ export default function Sidebar() {
   return (
     <aside className="w-60 bg-teal-800 text-white flex flex-col min-h-screen">
       {/* Logo */}
-      <div className="px-4 py-5 border-b border-teal-700">
-        <h2 className="text-lg font-bold">Apotek Moro Mari</h2>
-        <p className="text-xs text-teal-300 mt-0.5">Sistem Manajemen Farmasi</p>
+      <div className="px-4 py-5 border-b border-teal-700 flex items-center gap-3">
+        <img src="/logo.svg" alt="Pos Apotek" className="w-10 h-10" />
+        <div>
+          <h2 className="text-lg font-bold">Pos Apotek</h2>
+          <p className="text-xs text-teal-300 mt-0.5">Sistem Manajemen Farmasi</p>
+        </div>
       </div>
 
       {/* Navigation */}

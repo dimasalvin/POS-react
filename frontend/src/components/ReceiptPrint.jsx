@@ -37,7 +37,7 @@ const ReceiptPrint = forwardRef(({ data, onClose }, ref) => {
       </head>
       <body>
         <div class="center">
-          <h1>APOTEK MORO MARI</h1>
+          <h1>POS APOTEK</h1>
           <p>Jl. Gamers No. 8, Semarang</p>
           <p>Telp: (024) 1234567</p>
 
@@ -81,7 +81,7 @@ const ReceiptPrint = forwardRef(({ data, onClose }, ref) => {
         {/* Preview */}
         <div ref={ref} className="font-mono text-xs space-y-1 mb-4">
           <div className="text-center">
-            <p className="font-bold text-sm">APOTEK MORO MARI</p>
+            <p className="font-bold text-sm">POS APOTEK</p>
             <p>Jl. Gamers No. 8, Semarang</p>
           </div>
           <div className="border-t border-dashed border-gray-400 my-2" />
